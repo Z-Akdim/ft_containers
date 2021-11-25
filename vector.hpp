@@ -5,9 +5,9 @@
 #include "My_iterator.hpp"
 namespace ft
 {
-        template < class T, class Alloc = std::allocator<T> >
-        class vector{
-
+    template < class T, class Alloc = std::allocator<T> >
+    class vector
+	{
         public:
                 typedef T value_type;
                 typedef Alloc allocator_type;
@@ -55,10 +55,10 @@ namespace ft
 
                 size_type max_size() const
                 {
-                        //return ()
+                        return allocator_type().max_size(); 
                 }
                 
-                void resize(size_type n, value_type val = value_type())
+        void resize(size_type n, value_type val = value_type())
 		{
 			size_t i;
 			if (n > _capacity)
@@ -66,53 +66,67 @@ namespace ft
 				_capacity = n;
 				T *new_arr = _allocator.allocate(n);
 				for (size_t i = 0; i < _size; i++)
-					_allocator.construct(new_arr + i, arr[i]);
-				arr = new_arr;
+					_allocator.construct(new_arr + i, _arry[i]);
+				_arry = new_arr;
 			}
 			for (i = _size; i < n; i++)
-				_allocator.construct(arr + i, val);
+				_allocator.construct(_arry + i, val);
 			_size = n;
 		}
                 
-                size_type capacity() const{return (_capacity);}
+        size_type capacity() const{return (_capacity);
 
-                reference front(){return iterator(*_arry);}
+        reference front(){return iterator(*_arry);
 
-                const_reference front() const{return (*_arry);}
+        const_reference front() const{return (*_arry);
 
-                reference back(){return (*(_arry + _size - 1));}
+        reference back(){return (*(_arry + _size - 1));
 
-                const_reference back() const{return (*(_arry + _size - 1)); }
+        const_reference back() const{return (*(_arry + _size - 1));
 
-                reference at (size_type n){return (*(_arry + n));}
+        reference at (size_type n){return (*(_arry + n));
 
-                const_reference at (size_type n) const{return (*(_arry + n));}
+        const_reference at (size_type n) const{return (*(_arry + n));
 
-                bool empty() const
-                {
-                        if (!_size)
-                                return(true);
-                        return(false);
-                }
-                
-                template <class InputIterator>
+        bool empty() const
+        {
+                if (!_size)
+                        return(true);
+                return(false);
+        }
+
+		void reserve(size_type n)
+		{
+			if (_capacity >= n)
+				return;
+			T *new_arr = _allocator.allocate(n);
+			for (size_t i = 0; i < _size; i++)
+				_allocator.construct(new_arr + i, _arry[i]);
+			for (size_t i = 0; i < _size; i++)
+				_allocator.destroy(_arry + i);
+			_allocator.deallocate(_arry, _capacity);
+			_arry = new_arr;
+			_capacity = n;
+		}
+
+        template <class InputIterator>
 		void assign(InputIterator first, InputIterator last)
 		{
 			for (size_t i = 0; i < _size; i++)
-				_allocator.destroy(arr + i);
+				_allocator.destroy(_arry + i);
 			_size = 0;
 			InputIterator tmp = first;
 			while (tmp++ < last)
 				_size++;
 			if (_size > _capacity)
 			{
-				_allocator.deallocate(arr, _capacity);
-				arr = _allocator.allocate(_size);
+				_allocator.deallocate(_arry, _capacity);
+				_arry = _allocator.allocate(_size);
 				_capacity = _size;
 			}
 			for (_size = 0; first < last; _size++)
 			{
-				arr[_size] = *first;
+				_arry[_size] = *first;
 				first++;
 			}
 		}
@@ -121,15 +135,15 @@ namespace ft
 		{
 
 			for (size_t i = 0; i < _size; i++)
-				_allocator.destroy(arr + i);
+				_allocator.destroy(_arry + i);
 			if (n && n > _capacity)
 			{
-				_allocator.deallocate(arr, _capacity);
-				arr = _allocator.allocate(n);
+				_allocator.deallocate(_arry, _capacity);
+				_arry = _allocator.allocate(n);
 				_capacity = n;
 			}
 			for (size_t i = 0; i < n; i++)
-				_allocator.construct(arr + i, val);
+				_allocator.construct(_arry + i, val);
 			_size = n;
 		}
 
@@ -141,31 +155,92 @@ namespace ft
 				{
 					T *new_arr = _allocator.allocate(_capacity * 2);
 					for (size_t i = 0; i < _size; i++)
-						_allocator.construct(new_arr + i, arr[i]);
+						_allocator.construct(new_arr + i, _arry[i]);
 					for (size_t i = 0; i < _size; i++)
-						_allocator.destroy(arr + i);
-					_allocator.deallocate(arr, _capacity);
-					arr = new_arr;
+						_allocator.destroy(_arry + i);
+					_allocator.deallocate(_arry, _capacity);
+					_arry = new_arr;
 					_capacity *= 2;
 				}
 				else
 				{
 					_capacity *= 2;
-					arr = _allocator.allocate(1);
+					_arry = _allocator.allocate(1);
 					_capacity = 1;
 				}
 			}
-			_allocator.construct(arr + _size, val);
+			_allocator.construct( + _size, val);
 			_size++;
 		}
 
-                void pop_back()
+        void pop_back()
 		{
 			if (_size == 0)
 				return;
-			allocator_type().destroy(arr + --_size);
+			allocator_type().destroy( + --_size);
 		}
-        };
+		iterator erase(iterator position)
+		{
+			return vector::erase(position, position + 1);
+		}
+
+		iterator erase(iterator first, iterator last)
+		{
+			size_t count = 0;
+
+			if (last < first)
+				return first;
+			if (last > vector::end())
+				last = vector::end();
+			for (; first + count != last; count++)
+				;
+			for (size_t i = 0; last + i < vector::end(); i++)
+			{
+				*(first + i) = *(last + i);
+			}
+			for (size_t i = 0; i < count; i++)
+				_allocator.destroy(_arry + _size - 1 - i);
+			_size -= count;
+			return (first);
+		}
+
+		template <class data>
+		void SwapData(data &x, data &y)
+		{
+			data tmp;
+			tmp = x;
+			x = y;
+			y = tmp;
+		}
+
+		void swap(vector &x)
+		{
+			if (this == &x)
+				return;
+			else
+			{
+				this->SwapData(this->_arry, x._arry);
+				this->SwapData(this->_size, x._size);
+				this->SwapData(this->_capacity, x._capacity);
+			}
+		}
+
+		template <class T, class Alloc>
+		void swap(vector<T, Alloc> &x, vector<T, Alloc> &y)
+		{
+			x.swap(y);
+		}
+
+		void clear()
+		{
+			if (_size == 0)
+				return ;
+			for (size_t i = 0; i < _size; i++)
+				_allocator.destroy(_arry + i);
+			_size = 0;
+		}
+		allocator_type get_allocator() const { return _allocator; }
+    };
 };
 
 #endif
