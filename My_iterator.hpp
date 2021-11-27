@@ -75,7 +75,7 @@ namespace ft
 
             bool operator!=(MyIterator const &tmp) const
             { 
-                rteurn (p != tmp.p);
+                return (p != tmp.p);
             }
 
             T &operator[](ptrdiff_t nbr) 

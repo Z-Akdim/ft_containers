@@ -1,7 +1,7 @@
 #ifndef VECTOR_HPP
 #define VECTOR_HPP
 
-// #include "ft_container.hpp"
+#include "ft_container.hpp"
 #include "My_iterator.hpp"
 namespace ft
 {
@@ -41,7 +41,7 @@ namespace ft
 
                 vector (const vector& x);
                 vector& operator= (const vector& x);
-                ~vector();
+                ~vector(){;};
         public:
                 iterator begin(){return (iterator(_arry));}
 
@@ -66,7 +66,8 @@ namespace ft
 				_capacity = n;
 				T *new_arr = _allocator.allocate(n);
 				for (size_t i = 0; i < _size; i++)
-					_allocator.construct(new_arr + i, _arry[i]);
+					new_arr[i] = _arry[i];
+				delete [] _arry;
 				_arry = new_arr;
 			}
 			for (i = _size; i < n; i++)
@@ -74,23 +75,23 @@ namespace ft
 			_size = n;
 		}
                 
-        size_type capacity() const{return (_capacity);
+        size_type capacity() const{return (_capacity);}
 
-        reference front(){return iterator(*_arry);
+        reference front(){return iterator(*_arry);}
 
-        const_reference front() const{return (*_arry);
+        const_reference front() const{return (*_arry);}
 
-        reference back(){return (*(_arry + _size - 1));
+        reference back(){return (*(_arry + _size - 1));}
 
-        const_reference back() const{return (*(_arry + _size - 1));
+        const_reference back() const{return (*(_arry + _size - 1));}
 
-        reference at (size_type n){return (*(_arry + n));
+        reference at (size_type n){return (*(_arry + n));}
 
-        const_reference at (size_type n) const{return (*(_arry + n));
+        const_reference at (size_type n) const{return (*(_arry + n));}
 
         bool empty() const
         {
-                if (!_size)
+                if (_size == 0)
                         return(true);
                 return(false);
         }
@@ -101,10 +102,8 @@ namespace ft
 				return;
 			T *new_arr = _allocator.allocate(n);
 			for (size_t i = 0; i < _size; i++)
-				_allocator.construct(new_arr + i, _arry[i]);
-			for (size_t i = 0; i < _size; i++)
-				_allocator.destroy(_arry + i);
-			_allocator.deallocate(_arry, _capacity);
+				new_arr[i] = _arry[i];
+			delete [] _arry;
 			_arry = new_arr;
 			_capacity = n;
 		}
@@ -151,25 +150,22 @@ namespace ft
 		{
 			if (_size >= _capacity)
 			{
-				if (_capacity)
+				if (_capacity != 0)
 				{
-					T *new_arr = _allocator.allocate(_capacity * 2);
+					_capacity = _capacity * 2;
+					T *new_arr = _allocator.allocate(_capacity);
 					for (size_t i = 0; i < _size; i++)
-						_allocator.construct(new_arr + i, _arry[i]);
-					for (size_t i = 0; i < _size; i++)
-						_allocator.destroy(_arry + i);
-					_allocator.deallocate(_arry, _capacity);
+						new_arr[i] = _arry[i];
+					delete [] _arry;
 					_arry = new_arr;
-					_capacity *= 2;
 				}
 				else
 				{
-					_capacity *= 2;
-					_arry = _allocator.allocate(1);
 					_capacity = 1;
+					_arry = _allocator.allocate(_capacity);
 				}
 			}
-			_allocator.construct( + _size, val);
+			_arry[_size] = val;
 			_size++;
 		}
 
@@ -177,7 +173,7 @@ namespace ft
 		{
 			if (_size == 0)
 				return;
-			allocator_type().destroy( + --_size);
+			allocator_type().destroy(_arry + --_size);
 		}
 		iterator erase(iterator position)
 		{
@@ -225,11 +221,11 @@ namespace ft
 			}
 		}
 
-		template <class T, class Alloc>
-		void swap(vector<T, Alloc> &x, vector<T, Alloc> &y)
-		{
-			x.swap(y);
-		}
+		// template <class T, class Alloc>
+		// void swap(vector<T, Alloc> &x, vector<T, Alloc> &y)
+		// {
+		// 	x.swap(y);
+		// }
 
 		void clear()
 		{
@@ -241,6 +237,7 @@ namespace ft
 		}
 		allocator_type get_allocator() const { return _allocator; }
     };
-};
+}
+		
 
 #endif
