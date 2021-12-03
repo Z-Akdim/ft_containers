@@ -4,14 +4,19 @@
 
 int main()
 {
-    ft::vector<int> i;
-    i.push_back(1);
-    std::cout << "capcity : " << i.capacity() << std::endl;
-    i.push_back(2);
-    std::cout << "capcity : " << i.capacity() << std::endl;
-    i.push_back(3);
-    std::cout << "capcity : " << i.capacity() << std::endl;
+    ft::vector<int> i2;
+    ft::vector<int> i1;
+    i1.push_back(1);
+    i1.push_back(2);
+    i1.push_back(3);
     
+
+    i2.push_back(1);
+    i2.push_back(2);
+    i2.push_back(3);
+    if(i2 )
+    
+
     ft::vector<int>::iterator it = i.begin();
     ft::vector<int>::iterator it1 = i.end();
     for(;it != it1;it++)

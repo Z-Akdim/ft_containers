@@ -85,7 +85,4 @@ namespace ft
     };
 };
 
-#ifndef NAMESPACE
-#define NAMESPACE std
-#endif
 #endif

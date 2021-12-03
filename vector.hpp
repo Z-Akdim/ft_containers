@@ -96,6 +96,14 @@ namespace ft
                 return(false);
         }
 
+		reverse_iterator rbegin() { return (reverse_iterator(this->end())); }
+
+		const_reverse_iterator rbegin() const { return (reverse_iterator(this->end())); }
+
+		reverse_iterator rend() { return (reverse_iterator(this->begin())); }
+
+		const_reverse_iterator rend() const { return (reverse_iterator(this->begin())); }
+
 		void reserve(size_type n)
 		{
 			if (_capacity >= n)
@@ -219,13 +227,7 @@ namespace ft
 				this->SwapData(this->_size, x._size);
 				this->SwapData(this->_capacity, x._capacity);
 			}
-		}
-
-		// template <class T, class Alloc>
-		// void swap(vector<T, Alloc> &x, vector<T, Alloc> &y)
-		// {
-		// 	x.swap(y);
-		// }
+		} 
 
 		void clear()
 		{
