@@ -24,7 +24,7 @@ namespace ft
     {
         if (lhs.size() != rhs.size())
             return (false);
-        return ft::equal(lhs.begin(), lhs.end(), rhs.begin());
+        return std::equal(lhs.begin(), lhs.end(), rhs.begin());
     }
 
     template <class T, class Alloc>
@@ -38,7 +38,7 @@ namespace ft
     bool operator<(const vector<T, Alloc> &lhs,
                    const vector<T, Alloc> &rhs)
     {
-        return ft::lexicographical_compare(lhs.begin(), lhs.end(), rhs.begin(), rhs.end());
+        return std::lexicographical_compare(lhs.begin(), lhs.end(), rhs.begin(), rhs.end());
     }
 
     template <class T, class Alloc>
