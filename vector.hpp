@@ -1,30 +1,51 @@
 #ifndef VECTOR_HPP
 #define VECTOR_HPP
 
-#include "ft_container.hpp"
-#include "My_iterator.hpp"
+#include <vector>
+#include <iostream>
+#include <string.h>
+
+// #include "ft_container.hpp"
+#include "iterator_traits.hpp"
+#include "reverse_iterator.hpp"
+// #include "My_iterator.hpp"
+
+template <typename iterator> class MyIterator;
 namespace ft
 {
-template < class T, class Alloc = std::allocator<T> >
+template < typename T, typename Alloc = std::allocator<T> >
 class vector{
 
 public:
-    typedef T value_type;
-    typedef Alloc allocator_type;
-    typedef typename allocator_type::reference reference;
-    typedef typename allocator_type::const_reference const_reference;
-    typedef typename allocator_type::pointer pointer;
-    typedef typename allocator_type::const_pointer const_pointer;
-    typedef typename ft::MyIterator<value_type> iterator;
-    typedef typename ft::MyIterator<const_pointer> const_iterator;
-	typedef std::reverse_iterator<iterator> reverse_iterator;
-	typedef std::reverse_iterator<const_iterator> const_reverse_iterator;
-    typedef size_t  size_type;
+    typedef T													value_type;
+    typedef 													Alloc allocator_type;
+    typedef typename allocator_type::reference 					reference;
+    typedef typename allocator_type::const_reference 			const_reference;
+    typedef typename allocator_type::pointer 					pointer;
+    typedef typename allocator_type::const_pointer 				const_pointer;
+    typedef MyIterator<pointer> 								iterator;
+    typedef MyIterator<const_pointer> 							const_iterator;
+	typedef Reverse_Iterator<iterator> 							reverse_iterator;
+	typedef Reverse_Iterator<const_iterator> 					const_reverse_iterator;
+    typedef ptrdiff_t                                           difference_type;
+    typedef size_t                                              size_type;
 private:
     allocator_type _allocator;
     size_type _capacity;
     size_type _size;
-    value_type *_arry;
+    pointer _arry;
+
+	// void    reallocate(void)
+    // {
+    //     size_type       newCapacity = (!_capacity) ? 1 : 2 * _capacity;
+    //     value_type      *ptr = _arry.allocate(newCapacity);
+
+    //     for (size_type i = 0; i < _size; i++)
+    //         ptr[i] = _allocator[i];
+    //     _arry.deallocate(_allocator, _capacity);
+    //     _allocator = ptr;
+    //     _capacity = newCapacity;
+    // }
 public:
     
     explicit vector (const allocator_type& alloc = allocator_type()):
@@ -242,9 +263,171 @@ public:
 		_size = 0;
 	}
 	allocator_type get_allocator() const { return _allocator; }
-};
+
+	value_type&     operator[](size_type n) {
+        return _arry[n];
+    }
+    const value_type&   operator[](size_type n) const {
+        return _arry[n];
+    }
+}; //class vector
+
+    template <class T, class Alloc>
+    bool operator==(const vector<T, Alloc> &lhs,
+                    const vector<T, Alloc> &rhs)
+    {
+        if (lhs.size() != rhs.size())
+            return (false);
+        return std::equal(lhs.begin(), lhs.end(), rhs.begin());
+    }
+
+    template <class T, class Alloc>
+    bool operator!=(const vector<T, Alloc> &lhs,
+                    const vector<T, Alloc> &rhs)
+    {
+        return (!(lhs == rhs));
+    }
+
+    template <class T, class Alloc>
+    bool operator<(const vector<T, Alloc> &lhs,
+                   const vector<T, Alloc> &rhs)
+    {
+        return std::lexicographical_compare(lhs.begin(), lhs.end(), rhs.begin(), rhs.end());
+    }
+
+    template <class T, class Alloc>
+    bool operator<=(const vector<T, Alloc> &lhs,
+                    const vector<T, Alloc> &rhs)
+    {
+        return (!(rhs < lhs));
+    }
+
+    template <class T, class Alloc>
+    bool operator>(const vector<T, Alloc> &lhs,
+                   const vector<T, Alloc> &rhs)
+    {
+        return (!(lhs < rhs));
+    }
+
+    template <class T, class Alloc>
+    bool operator>=(const vector<T, Alloc> &lhs,
+                    const vector<T, Alloc> &rhs)
+    {
+        return (!(lhs <= rhs));
+    }
+
+} //ft_namespace
+
+//my_iterator
+template <typename T> 
+class MyIterator
+{
+        typedef T                                                       		iterator_type;
+        typedef typename iterator_traits<iterator_type>::difference_type       difference_type;
+        typedef typename iterator_traits<iterator_type>::value_type            value_type;
+        typedef typename iterator_traits<iterator_type>::pointer               pointer;
+        typedef typename iterator_traits<iterator_type>::reference             reference;
+        typedef typename iterator_traits<iterator_type>::iterator_category     iterator_category;
+
+	private:
+
+        iterator_type    p;
+   	public:
+        MyIterator(): p() {}
+        explicit MyIterator(iterator_type x): p(x) {}
+        MyIterator(const MyIterator& x): p(x.p) {}
+        template <typename iter>
+        MyIterator(const MyIterator<iter>& i): p(i.base()) {}
+       	int& operator*() {return *p;}
+       	T base() const{return (*p);}
+       	MyIterator &operator++()
+       	{ 
+           ++p;
+           return (*this);
+	   	}
+	   	MyIterator operator++(int)
+       	{
+           MyIterator cop(*this); 
+           operator++(); 
+           return (cop);
+       	}
+	   	MyIterator &operator--()
+       	{
+           --p; 
+           return (*this);
+       	}
+		MyIterator &operator--(int)
+       	{
+           MyIterator cop(*this); 
+           operator--(); 
+           return (cop);
+       	}
+	   	MyIterator &operator+(difference_type nbr)
+       	{
+           p += nbr; 
+           return (*this);
+       	}
+	   	MyIterator &operator-(difference_type nbr)
+       	{ 
+           p -= nbr;
+           return (*this);
+       	}
+		MyIterator &operator+=(difference_type nbr)
+       	{
+           p += nbr;
+           return (*this);
+       	}
+		MyIterator &operator-=(difference_type nbr)
+       	{ 
+           p -= nbr;
+           return (*this);
+       	}
+		bool operator==(MyIterator const &tmp) const
+       	{ 
+           return (p == tmp.p);
+       	}
+		bool operator!=(MyIterator const &tmp) const
+       	{ 
+           return (p != tmp.p);
+       	}
+		T &operator[](difference_type nbr) 
+       	{
+           return (p[nbr]);
+		}
 };
 
-	
+
+template <typename iterator_A, typename iterator_B>
+bool operator==(const MyIterator<iterator_A>& x, const MyIterator<iterator_B>& y) {
+    return (x.base() == y.base());
+}
+template <typename iterator_A, typename iterator_B>
+bool operator>(const MyIterator<iterator_A>& x, const MyIterator<iterator_B>& y) {
+    return x.base() > y.base();
+}
+template <typename iterator_A, typename iterator_B>
+bool operator<(const MyIterator<iterator_A>& x, const MyIterator<iterator_B>& y) {
+    return x.base() < y.base();
+}
+template <typename iterator_A, typename iterator_B>
+bool operator!=(const MyIterator<iterator_A>& x, const MyIterator<iterator_B>& y) {
+    return !(x == y);
+}
+template <typename iterator_A, typename iterator_B>
+bool operator>=(const MyIterator<iterator_A>& x, const MyIterator<iterator_B>& y) {
+    return !(x < y);
+}
+template <typename iterator_A, typename iterator_B>
+bool operator<=(const MyIterator<iterator_A>& x, const MyIterator<iterator_B>& y) {
+    return !(x > y);
+}
+template <typename iterator_A, typename iterator_B>
+typename MyIterator<iterator_A>::difference_type operator-(const MyIterator<iterator_A>& x, const MyIterator<iterator_B>& y) {
+    return x.base() - y.base();
+}
+template<typename iterator>
+MyIterator<iterator>   operator+(typename MyIterator<iterator>::difference_type n, const MyIterator<iterator>& x) {
+    return MyIterator<iterator>(x.base() + n);
+}
 
 #endif

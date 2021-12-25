@@ -47,7 +47,7 @@ namespace ft{
 		return true;
 	};
 
-		// is_pointer ==>	return true if:
+	// is_pointer ==>	return true if:
 	// type == pointer_type
 	template <typename T>
 	struct is_pointer
