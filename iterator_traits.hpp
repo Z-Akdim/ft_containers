@@ -1,11 +1,11 @@
-#ifndef ITERATOR_TRAITS
-#define ITERATOR_TRAITS
 
+#ifndef ITERATOR_TRAITS_HPP 
+#define ITERATOR_TRAITS_HPP
 
 #include <iostream>
 
 template<typename Iterator>
-struct iterator_traits {
+struct iterators_traits {
     typedef typename Iterator::difference_type      difference_type;
     typedef typename Iterator::value_type           value_type;
     typedef typename Iterator::pointer              pointer;
@@ -14,7 +14,7 @@ struct iterator_traits {
 };
 
 template<typename T>
-struct iterator_traits<T*> {
+struct iterators_traits<T*> {
     typedef ptrdiff_t                           difference_type;
     typedef T                                   value_type;
     typedef T*                                  pointer;
@@ -23,7 +23,7 @@ struct iterator_traits<T*> {
 };
 
 template<typename T>
-struct iterator_traits<const T*> {
+struct iterators_traits<const T*> {
     typedef ptrdiff_t                           difference_type;
     typedef T                                   value_type;
     typedef const T*                            pointer;
@@ -31,4 +31,4 @@ struct iterator_traits<const T*> {
     typedef std::random_access_iterator_tag     iterator_category;
 };
 
-#endif
+#endif // ITERATOR_TRAITS_HPP
