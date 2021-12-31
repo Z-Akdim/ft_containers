@@ -1,5 +1,3 @@
-
-
 #ifndef AVAL_TREE_HPP
 #define AVAL_TREE_HPP
 
@@ -8,14 +6,14 @@
 
 template<typename T>
 struct Node {
-    typedef Node*           N_Ptr;
-    typedef const Node*     Const_N_Ptr;
+    typedef Node*           NodePtr;
+    typedef const Node*     Const_NodePtr;
     typedef size_t          size_type;
 
     T               data;
-    N_Ptr         right;
-    N_Ptr         left;
-    N_Ptr         parent;
+    NodePtr         right;
+    NodePtr         left;
+    NodePtr         parent;
     size_type       height;
     Node(T _data):  data(_data),
                     right(NULL),
@@ -25,15 +23,15 @@ struct Node {
     }
 };
 
-template<typename N_Ptr>
-N_Ptr  Avl_tree_inc(N_Ptr x) {
+template<typename NodePtr>
+NodePtr  Avl_tree_increment(NodePtr x) {
     if (x->right) {
         x = x->right;
         while (x->left) {
             x = x->left;
         }
     } else {
-        N_Ptr y = x->parent;
+        NodePtr y = x->parent;
         while (x == y->right) {
             x = y;
             y = y->parent;
@@ -45,16 +43,16 @@ N_Ptr  Avl_tree_inc(N_Ptr x) {
     return x;
 }
 
-template<typename N_Ptr>
-N_Ptr Avl_tree_dec(N_Ptr x) {
+template<typename NodePtr>
+NodePtr Avl_tree_decrement(NodePtr x) {
     if (x->left) {
-        N_Ptr y = x->left;
+        NodePtr y = x->left;
         while (y->right) {
             y = y->right;
         }
         x = y;
     } else {
-        N_Ptr y = x->parent;
+        NodePtr y = x->parent;
         while (x == y->left) {
             x = y;
             y = y->parent;
@@ -71,18 +69,18 @@ template <  typename T,
 public:
 
     typedef T                                                   value_type;
-    typedef typename Node<value_type>::N_Ptr                  AvlNode;
+    typedef typename Node<value_type>::NodePtr                  AvlNode;
     typedef typename Node<value_type>::size_type                size_type;
     typedef Comp                                                value_compare;
     typedef typename Alloc::template rebind<Node<T> >::other    allocator_type;
 
 private:
 
-    AvlNode                 m_root;
-    AvlNode                 m_end;
-    size_type               m_size;
-    allocator_type          m_allocator;
-    value_compare           m_comp;
+    AvlNode                 _root;
+    AvlNode                 _end;
+    size_type               _size;
+    allocator_type          _allocator;
+    value_compare           _comp;
 
     size_type   max(size_type a, size_type b) {
         return (a > b) ? a : b;
@@ -118,7 +116,7 @@ private:
         return current;
     }
 
-    AvlNode R_Rotate(AvlNode y) {
+    AvlNode rightRotate(AvlNode y) {
         AvlNode		x = y->left;
 
         if(x->right != NULL)
@@ -132,7 +130,7 @@ private:
         return x;
     }
 
-    AvlNode L_Rotate(AvlNode x) {
+    AvlNode leftRotate(AvlNode x) {
         AvlNode     y = x->right;
 
         if(y->left != NULL)
@@ -148,15 +146,15 @@ private:
 
     AvlNode insertNode(AvlNode node, const value_type data, AvlNode parent = NULL) {
         if (!node) {
-            node = m_allocator.allocate(1);
-            m_allocator.construct(node, data);
+            node = _allocator.allocate(1);
+            _allocator.construct(node, data);
             node->parent = parent;
-            m_size += 1;
+            _size += 1;
             return node;
-        } else if (m_comp(data, node->data)) {
+        } else if (_comp(data, node->data)) {
             node->left = insertNode(node->left, data, node);
         }
-        else if (m_comp(node->data, data)) {
+        else if (_comp(node->data, data)) {
             node->right = insertNode(node->right, data, node);
         } else {
             return node;
@@ -167,18 +165,18 @@ private:
         node->height = max(heightOf(node->left), heightOf(node->right)) + 1;
         int balanceFactor = getBalanceFactor(node);
         if (balanceFactor > 1) {
-            if (m_comp(data, node->left->data)) {
-                return R_Rotate(node);
+            if (_comp(data, node->left->data)) {
+                return rightRotate(node);
             } else {
-                node->left = L_Rotate(node->left);
-                return R_Rotate(node);
+                node->left = leftRotate(node->left);
+                return rightRotate(node);
             }
         } else if (balanceFactor < -1) {
-            if (m_comp(node->right->data, data)) {
-                return L_Rotate(node);
+            if (_comp(node->right->data, data)) {
+                return leftRotate(node);
             } else {
-                node->right = R_Rotate(node->right);
-                return L_Rotate(node);
+                node->right = rightRotate(node->right);
+                return leftRotate(node);
             }
         }
         return node;
@@ -187,9 +185,9 @@ private:
     AvlNode removeNode(AvlNode node, value_type data) {
         if (!node) {
             return node;
-        } else if (m_comp(data, node->data)) {
+        } else if (_comp(data, node->data)) {
             node->left = removeNode(node->left, data);
-        } else if (m_comp(node->data, data)) {
+        } else if (_comp(node->data, data)) {
             node->right = removeNode(node->right, data);
         } else {
             if (!node->left || !node->right) {
@@ -203,18 +201,18 @@ private:
                     node = tmp;
                     tmp = temp;
                 }
-                m_allocator.deallocate(tmp, 1);
-                m_size -= 1;
+                _allocator.deallocate(tmp, 1);
+                _size -= 1;
             } else {
                 AvlNode tmp = findMin(node->right);
-                AvlNode newNode = m_allocator.allocate(1);
-                m_allocator.construct(newNode, tmp->data);
+                AvlNode newNode = _allocator.allocate(1);
+                _allocator.construct(newNode, tmp->data);
                 newNode->parent = node->parent;
                 newNode->right = node->right;
                 newNode->left = node->left;
                 node->right->parent = newNode;
                 node->left->parent = newNode;
-                m_allocator.deallocate(node, 1);
+                _allocator.deallocate(node, 1);
                 node = newNode;
                 node->right = removeNode(node->right, tmp->data);
             }
@@ -227,38 +225,38 @@ private:
         int balanceFactor = getBalanceFactor(node);
         if (balanceFactor > 1) {
             if (getBalanceFactor(node->left) >= 0) {
-                return R_Rotate(node);
+                return rightRotate(node);
             } else {
-                node->left = L_Rotate(node->left);
-                return R_Rotate(node);
+                node->left = leftRotate(node->left);
+                return rightRotate(node);
             }
         } else if (balanceFactor < -1) {
             if (getBalanceFactor(node->right) <= 0) {
-                return L_Rotate(node);
+                return leftRotate(node);
             } else {
-                node->right = R_Rotate(node->right);
-                return L_Rotate(node);
+                node->right = rightRotate(node->right);
+                return leftRotate(node);
             }
         }
-        ret    AvlNode makeEmpty(AvlNode node) {
+        return node;
+    }
+
+    AvlNode makeEmpty(AvlNode node) {
         if (node != NULL) {
             makeEmpty(node->left);
             makeEmpty(node->right);
-            m_allocator.deallocate(node, 1);
+            _allocator.deallocate(node, 1);
         }
         return NULL;
-    }urn node;
     }
-
-
 
     AvlNode searchAvlTree(AvlNode node, const value_type val) const
     {
         if (node == NULL) {
             return NULL;
-        } else if (m_comp(val, node->data)) {
+        } else if (_comp(val, node->data)) {
             return searchAvlTree(node->left, val);
-        } else if (m_comp(node->data, val)) {
+        } else if (_comp(node->data, val)) {
             return searchAvlTree(node->right, val);
         }
         return node;
@@ -266,88 +264,88 @@ private:
 
 public:
 
-    Avl_tree(value_compare c): m_comp(c) {
-        m_root = NULL;
-        m_size = 0;
-        m_end = m_allocator.allocate(1);
-        m_allocator.construct(m_end, value_type());
+    Avl_tree(value_compare c): _comp(c) {
+        _root = NULL;
+        _size = 0;
+        _end = _allocator.allocate(1);
+        _allocator.construct(_end, value_type());
     }
     ~Avl_tree() {
-        m_root = makeEmpty(m_root);
-        m_allocator.deallocate(m_end,1);
+        _root = makeEmpty(_root);
+        _allocator.deallocate(_end,1);
     }
 
     void    insert(value_type data) {
-        m_root = insertNode(m_root, data);
-        m_root->parent = m_end;
-        m_end->left = m_root;
+        _root = insertNode(_root, data);
+        _root->parent = _end;
+        _end->left = _root;
     }
     void    remove(value_type val) {
-        m_root = removeNode(m_root, val);
-        if (m_root) {
-            m_root->parent = m_end;
-            m_end->left = m_root;
+        _root = removeNode(_root, val);
+        if (_root) {
+            _root->parent = _end;
+            _end->left = _root;
         }
     }
     bool    isEmpty() const {
-        return (m_size == 0);
+        return (_size == 0);
     }
     void    clear() {
-        m_root = makeEmpty(m_root);
-        m_size = 0;
+        _root = makeEmpty(_root);
+        _size = 0;
     }
     size_type   getSize() const {
-        return m_size;
+        return _size;
     }
     size_type   getMaxSize() const {
-        return m_allocator.max_size();
+        return _allocator.max_size();
     }
     AvlNode getEndNode() const {
-        return m_end;
+        return _end;
     }
     AvlNode getMinValNode() const {
-        return findMin(m_root);
+        return findMin(_root);
     }
     AvlNode getMaxValNode() const {
-        return findMax(m_root);
+        return findMax(_root);
     }
     AvlNode search(value_type val) const {
-        AvlNode node = searchAvlTree(m_root, val);
+        AvlNode node = searchAvlTree(_root, val);
         if (node == NULL)
-            return m_end;
+            return _end;
         return node;
     }
     void    swap(Avl_tree& x) {
-        AvlNode     x_begin = x.m_root;
-        AvlNode     x_end = x.m_end;
-        size_type   x_size = x.m_size;
+        AvlNode     x_begin = x._root;
+        AvlNode     x_end = x._end;
+        size_type   x_size = x._size;
 
-        x.m_size = m_size;
-        m_size = x_size;
-        x.m_root = m_root;
-        x.m_end = m_end;
-        m_root = x_begin;
-        m_end = x_end;
+        x._size = _size;
+        _size = x_size;
+        x._root = _root;
+        x._end = _end;
+        _root = x_begin;
+        _end = x_end;
     }
     AvlNode lower_bound(const value_type val) {
-        AvlNode current = findMin(m_root);
+        AvlNode current = findMin(_root);
 
-        while (current && current != m_end) {
-            if (!m_comp(current->data, val))
+        while (current && current != _end) {
+            if (!_comp(current->data, val))
                 return current;
-            current = Avl_tree_inc(current);
+            current = Avl_tree_increment(current);
         }
-        return m_end;
+        return _end;
     }
     AvlNode upper_bound(const value_type val) {
-        AvlNode current = findMin(m_root);
+        AvlNode current = findMin(_root);
 
-        while (current && current != m_end) {
-            if (m_comp(val, current->data))
+        while (current && current != _end) {
+            if (_comp(val, current->data))
                 return current;
-            current = Avl_tree_inc(current);
+            current = Avl_tree_increment(current);
         }
-        return m_end;
+        return _end;
     }
 };
 

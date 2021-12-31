@@ -2,11 +2,12 @@
 #ifndef VECTOR_HPP
 #define VECTOR_HPP
 
-#include "equal.hpp"
-#include "enable_if.hpp"
+// #include "equal.hpp"
+// #include "enable_if.hpp"
 #include "is_integral.hpp"
 #include "reverse_iterator.hpp"
-#include "lexicographical_compare.hpp"
+#include "helps.hpp"
+// #include "lexicographical_compare.hpp"
 
 template <typename iterator> class normal_iterator;
 
@@ -168,12 +169,12 @@ public:
         return _buff[n];
     }
     value_type& at(size_type n) {
-        if (n >= _size)
+        if (n < 0 || n >= _size)
             throw std::out_of_range("vector");
         return _buff[n];
     }
     const value_type&   at(size_type n) const {
-        if (n >= _size)
+        if (n < 0 || n >= _size)
             throw std::out_of_range("vector");
         return _buff[n];
     }
