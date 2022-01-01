@@ -53,7 +53,7 @@ namespace ft {
         template<typename U, typename I>
         friend bool operator>=(const stack<U,I>& lhs, const stack<U,I>& rhs);
 
-    }; // class stack
+    };
 
     template <class T, class Container>
     bool    operator==(const stack<T,Container>& lhs, const stack<T,Container>& rhs) {

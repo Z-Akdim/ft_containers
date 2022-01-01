@@ -91,7 +91,6 @@ inline bool operator>=(const ReverseIterator<_Iterator>& x, const ReverseIterato
     return !(x < y);
 }
 
-// Comparison of ReverseIterator to const ReverseIterator.
 template<typename iteratorL, typename iteratorR>
 inline  bool    operator==(const ReverseIterator<iteratorL>& x, const ReverseIterator<iteratorR>& y) {
     return x.base() == y.base();

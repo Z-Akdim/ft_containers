@@ -107,7 +107,6 @@ private:
 
     AvlNode findMax(AvlNode node) const {
         AvlNode current = node;
-
         if (current != NULL) {
             while (current->right) {
                 current = current->right;
@@ -160,8 +159,6 @@ private:
             return node;
         }
 
-        // Update the balance factor of each node and
-        // balance the tree
         node->height = max(heightOf(node->left), heightOf(node->right)) + 1;
         int balanceFactor = getBalanceFactor(node);
         if (balanceFactor > 1) {
@@ -219,8 +216,6 @@ private:
         }
         if (!node) return node;
 
-        // Update the balance factor of each node and
-        // balance the tree
         node->height = 1 + max(heightOf(node->left), heightOf(node->right));
         int balanceFactor = getBalanceFactor(node);
         if (balanceFactor > 1) {

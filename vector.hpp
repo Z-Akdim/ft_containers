@@ -2,12 +2,9 @@
 #ifndef VECTOR_HPP
 #define VECTOR_HPP
 
-// #include "equal.hpp"
-// #include "enable_if.hpp"
 #include "is_integral.hpp"
 #include "reverse_iterator.hpp"
 #include "helps.hpp"
-// #include "lexicographical_compare.hpp"
 
 template <typename iterator> class normal_iterator;
 
